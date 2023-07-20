@@ -1,0 +1,9 @@
+{
+	"name": "maanorgdatafactorydev",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "06c59507-5413-4cfd-8d0c-c28476de139c",
+		"tenantId": "91cc1fb6-1275-4acf-b3ea-c213ec16257b"
+	}
+}

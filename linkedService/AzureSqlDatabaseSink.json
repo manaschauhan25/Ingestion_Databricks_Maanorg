@@ -1,0 +1,19 @@
+{
+	"name": "AzureSqlDatabaseSink",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=maanorgsourceserverdev.database.windows.net;Initial Catalog=\"sinksqdb \";User ID=azureadmin",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVaultSource",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "SQLDB-Secret"
+			}
+		}
+	}
+}
