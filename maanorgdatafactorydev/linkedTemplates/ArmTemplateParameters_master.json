@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "maanorgdatafactorydev"
+		},
+		"AzureSqlDatabaseSink_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=maanorgsourceserverdev.database.windows.net;Initial Catalog=\"sinksqdb \";User ID=azureadmin"
+		},
+		"AzureSqlSourceLinkedServeice_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=maanorgsourceserverdev.database.windows.net;Initial Catalog=\"maanorgsourcedbdev \";User ID=azureadmin"
+		},
+		"AzureDataLakeStorageSink_properties_typeProperties_url": {
+			"value": "https://maanorgadlssinkdev.dfs.core.windows.net/"
+		},
+		"AzureDataLakeStorageSink_properties_typeProperties_tenant": {
+			"value": "91cc1fb6-1275-4acf-b3ea-c213ec16257b"
+		},
+		"AzureDataLakeStorageSink_properties_typeProperties_servicePrincipalId": {
+			"value": "ebee5ff9-4411-4aa8-b5de-0d47b857ef77"
+		},
+		"AzureDataLakeStorageSource_properties_typeProperties_url": {
+			"value": "https://maanorgadlssourcedev.dfs.core.windows.net/"
+		},
+		"AzureDataLakeStorageSource_properties_typeProperties_tenant": {
+			"value": "91cc1fb6-1275-4acf-b3ea-c213ec16257b"
+		},
+		"AzureDataLakeStorageSource_properties_typeProperties_servicePrincipalId": {
+			"value": "ebee5ff9-4411-4aa8-b5de-0d47b857ef77"
+		},
+		"AzureKeyVaultSource_properties_typeProperties_baseUrl": {
+			"value": "https://maanorgkeyvaultdev.vault.azure.net/"
+		},
+		"RestServiceSource_properties_typeProperties_url": {
+			"value": "https://airlabs.co/api/v9/airlines"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
