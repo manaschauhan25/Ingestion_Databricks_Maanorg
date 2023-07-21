@@ -41,6 +41,10 @@
 			"type": "string",
 			"defaultValue": "ebee5ff9-4411-4aa8-b5de-0d47b857ef77"
 		},
+		"AzureDatabricks_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0716-211944-6zbdhuv7"
+		},
 		"AzureKeyVaultSource_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://maanorgkeyvaultdev.vault.azure.net/"
@@ -105,10 +109,33 @@
 					},
 					"AzureDataLakeStorageSource_properties_typeProperties_servicePrincipalId": {
 						"value": "[parameters('AzureDataLakeStorageSource_properties_typeProperties_servicePrincipalId')]"
+					},
+					"AzureDatabricks_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('AzureDatabricks_properties_typeProperties_existingClusterId')]"
 					}
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "maanorgdatafactorydev_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'maanorgdatafactorydev_ArmTemplate_0')]"
+			]
 		}
 	]
 }

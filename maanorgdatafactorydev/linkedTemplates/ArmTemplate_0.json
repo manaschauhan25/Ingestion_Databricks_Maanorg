@@ -48,6 +48,10 @@
 		"AzureDataLakeStorageSource_properties_typeProperties_servicePrincipalId": {
 			"type": "string",
 			"defaultValue": "ebee5ff9-4411-4aa8-b5de-0d47b857ef77"
+		},
+		"AzureDatabricks_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0716-211944-6zbdhuv7"
 		}
 	},
 	"variables": {
@@ -163,6 +167,30 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricks')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-1077481770627825.5.azuredatabricks.net/",
+					"accessToken": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVaultSource",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "databrickstoken"
+					},
+					"existingClusterId": "[parameters('AzureDatabricks_properties_typeProperties_existingClusterId')]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultSource')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureDatabricksDeltaLake')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -230,6 +258,54 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultSource')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Running_Custom_DBNB')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/500067883@stu.upes.ac.in/maanorgdev/Run_Zone",
+							"baseParameters": {
+								"Zone_Name": {
+									"value": "@pipeline().parameters.Zone_Name",
+									"type": "Expression"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"Zone_Name": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks')]"
 			]
 		},
 		{
@@ -955,261 +1031,6 @@
 				"[concat(variables('factoryId'), '/datasets/unzippedsink')]",
 				"[concat(variables('factoryId'), '/datasets/ADLSSOURCE_CSV')]",
 				"[concat(variables('factoryId'), '/datasets/ADLSSINK_CSV')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Databricks pipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Lookup1",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "JsonSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "JsonReadSettings"
-								}
-							},
-							"dataset": {
-								"referenceName": "Json_Metadata",
-								"type": "DatasetReference",
-								"parameters": {
-									"container": "manualinfo",
-									"file_name": "publish_table.json"
-								}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "ForEach1",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "Lookup1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Lookup1').output.value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "Copy data1",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureDatabricksDeltaLakeSource",
-											"exportSettings": {
-												"type": "AzureDatabricksDeltaLakeExportCommand"
-											}
-										},
-										"sink": {
-											"type": "AzureSqlSink",
-											"writeBehavior": "insert",
-											"sqlWriterUseTableLock": false,
-											"tableOption": "autoCreate",
-											"disableMetricsCollection": false
-										},
-										"enableStaging": true,
-										"stagingSettings": {
-											"linkedServiceName": {
-												"referenceName": "AzureDataLakeStorageSource",
-												"type": "LinkedServiceReference"
-											},
-											"path": "rrrr"
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "AzureDatabricksDeltaLakeDatasetSourfce",
-											"type": "DatasetReference",
-											"parameters": {
-												"tablename": {
-													"value": "@item().source_table_name",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "AzureSqlTableSINK",
-											"type": "DatasetReference",
-											"parameters": {
-												"tablename": {
-													"value": "@item().publish_table_name",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2023-07-20T23:41:03Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Json_Metadata')]",
-				"[concat(variables('factoryId'), '/datasets/AzureDatabricksDeltaLakeDatasetSourfce')]",
-				"[concat(variables('factoryId'), '/datasets/AzureSqlTableSINK')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorageSource')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/retrieve_from RESTAPI')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Web1",
-						"type": "WebActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": true,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": "https://maanorgkeyvaultdev.vault.azure.net/secrets/APIRESTKEY/d989e81c5ac8447ea1b9877036368015?api-version=7.0",
-							"method": "GET",
-							"headers": {},
-							"authentication": {
-								"type": "MSI",
-								"resource": "https://vault.azure.net"
-							}
-						}
-					},
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Web1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "GET"
-							},
-							"sink": {
-								"type": "JsonSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "JsonWriteSettings"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"path": "$['response']"
-										},
-										"sink": {
-											"path": "$['response']"
-										}
-									}
-								],
-								"collectionReference": ""
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "RESTDourceDataset",
-								"type": "DatasetReference",
-								"parameters": {
-									"url": {
-										"value": "@activity('Web1').output.value",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Json_Metadata",
-								"type": "DatasetReference",
-								"parameters": {
-									"container": "raw",
-									"file_name": {
-										"value": "@concat('Arilines','\\Date-Part ', formatDateTime(utcnow(),'yyyy-MM-dd'),'\\airlines.json')",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2023-07-20T23:41:03Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/RESTDourceDataset')]",
-				"[concat(variables('factoryId'), '/datasets/Json_Metadata')]"
 			]
 		}
 	]

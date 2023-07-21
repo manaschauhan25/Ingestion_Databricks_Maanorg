@@ -29,6 +29,9 @@
 		"AzureDataLakeStorageSource_properties_typeProperties_servicePrincipalId": {
 			"value": "ebee5ff9-4411-4aa8-b5de-0d47b857ef77"
 		},
+		"AzureDatabricks_properties_typeProperties_existingClusterId": {
+			"value": "0716-211944-6zbdhuv7"
+		},
 		"AzureKeyVaultSource_properties_typeProperties_baseUrl": {
 			"value": "https://maanorgkeyvaultdev.vault.azure.net/"
 		},
