@@ -1,0 +1,39 @@
+{
+	"name": "Running_Custom_DBNB",
+	"properties": {
+		"activities": [
+			{
+				"name": "Notebook",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/500067883@stu.upes.ac.in/maanorgdev/Run_Zone",
+					"baseParameters": {
+						"Zone_Name": {
+							"value": "@pipeline().parameters.Zone_Name",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"Zone_Name": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}

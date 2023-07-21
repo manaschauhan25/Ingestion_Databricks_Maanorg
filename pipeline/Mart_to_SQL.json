@@ -1,5 +1,5 @@
 {
-	"name": "Databricks pipeline",
+	"name": "Mart_to_SQL",
 	"properties": {
 		"activities": [
 			{
