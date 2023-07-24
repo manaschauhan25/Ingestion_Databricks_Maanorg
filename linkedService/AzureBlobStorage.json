@@ -14,7 +14,7 @@
 					"referenceName": "AzureKeyVaultSource",
 					"type": "LinkedServiceReference"
 				},
-				"secretName": "spnclientid"
+				"secretName": "sp-secret"
 			},
 			"accountKind": "BlobStorage"
 		}
